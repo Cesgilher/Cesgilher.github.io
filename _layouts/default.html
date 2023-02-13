@@ -3,9 +3,9 @@
 {% include head.html %}
 <head>
  ...
-   {% if jekyll.environment == 'production' and site.google_analytics %}
+ {% if site.google_analytics %}
    {% include analytics.html %}
-   {% endif %}
+{% endif %}
  </head>
 <body>
   <div id="wrapper">
