@@ -13,6 +13,12 @@ permalink: /:title
 paginate: 3
 paginate_path: /page/:num/
 
+collections:
+  repos-guapos:
+    output: true
+    permalink: /repos-guapos/:name
+
+
 defaults:
   -
     scope:

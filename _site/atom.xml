@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cesgilher</title>
+    <description>A personal blog</description>
+    <link>http://localhost:4000</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <author>
+      <name>Cesgilher</name>
+      <email>cesgilher@gmail.com</email>
+      <uri>cesgilher.github.io</uri>
+    </author>
+    
+      <item>
+        <title>Vulnhub DC-1.1</title>
+        <description>&lt;p&gt;&lt;strong&gt;Resolucion de la maquina DC-1.1 de Vulnhub&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/dc-1,292/&quot;&gt;Link al ejercicio&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Hoy vamos a resolver la Maquina DC-1.1 de Vulnhub, la cual es una maquina de Windows Server 2008 R2. La maquina es bastante sencilla, pero es una buena practica para empezar a resolver maquinas de Vulnhub.&lt;/p&gt;
+
+&lt;h2 id=&quot;escaneo-de-puertos&quot;&gt;Escaneo de puertos&lt;/h2&gt;
+
+&lt;p&gt;Para empezar, vamos a realizar un escaneo de puertos con nmap para ver que puertos tenemos abiertos en la maquina.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-oN&lt;/span&gt; nmap/initial
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/0Z7ZQ9M.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vemos que tenemos los puertos 80, 139 y 445 abiertos. Vamos a empezar por el puerto 80, que es el que mas nos interesa.&lt;/p&gt;
+
+&lt;h2 id=&quot;escaneo-de-servicios&quot;&gt;Escaneo de servicios&lt;/h2&gt;
+
+&lt;p&gt;Vamos a realizar un escaneo de servicios con nmap para ver que servicios tenemos corriendo en los puertos que tenemos abiertos.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 80,139,445 &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-oN&lt;/span&gt; nmap/services
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/1Z0ZQ9M.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vemos que tenemos el servicio http corriendo en el puerto 80. Vamos a ver que tenemos en el puerto 139 y 445.&lt;/p&gt;
+
+&lt;h2 id=&quot;escaneo-de-smb&quot;&gt;Escaneo de SMB&lt;/h2&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 139,445 &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;smb-enum-shares.nse,smb-enum-users.nse &lt;span class=&quot;nt&quot;&gt;-oN&lt;/span&gt; nmap/smb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/2Z0ZQ9M.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vemos que tenemos un usuario llamado “Administrator” y un share llamado “Public”. Vamos a ver que tenemos en el share “Public”.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\\\\&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/3Z0ZQ9M.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vemos que tenemos un share llamado “DC-1.1”. Vamos a ver que tenemos en el share “DC-1.1”.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;se&quot;&gt;\\\\&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/4Z0ZQ9M.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vemos que tenemos un archivo llamado “DC-1.1.txt”. Vamos a ver que tenemos en el archivo “DC-1.1.txt”.&lt;/p&gt;
+
+&lt;h2 id=&quot;escaneo-de-http--80&quot;&gt;Escaneo de HTTP  (80)&lt;/h2&gt;
+
+&lt;p&gt;Vamos a ver que tenemos en el puerto 80.&lt;/p&gt;
+
+&lt;p&gt;……&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 13 Feb 2023 00:00:00 +0100</pubDate>
+        <link>http://localhost:4000//VulnHub-DC-1.1</link>
+        <link href="http://localhost:4000/VulnHub-DC-1.1"/>
+        <guid isPermaLink="true">http://localhost:4000/VulnHub-DC-1.1</guid>
+      </item>
+    
+      <item>
+        <title>¿Qué es un ataque de denegación de servicio o DDoS?</title>
+        <description>&lt;h2 id=&quot;qué-es-un-ataque-ddos&quot;&gt;¿Qué es un ataque DDoS?&lt;/h2&gt;
+
+&lt;p&gt;Un ataque DDoS es un tipo de ataque cibernético en el que se inunda un servidor o una red con una gran cantidad de solicitudes falsas, lo que hace que se colapse y no pueda proporcionar servicios a los usuarios legítimos. Este tipo de ataque se lleva a cabo mediante el uso de una red distribuida de dispositivos comprometidos (comúnmente conocidos como “zombis”) que envían solicitudes masivas al objetivo.&lt;/p&gt;
+
+&lt;p&gt;El objetivo de un ataque DDoS es negar el acceso a un recurso en línea, ya sea un sitio web, un servicio en la nube o cualquier otro recurso en línea que dependa de una conexión a Internet para funcionar.&lt;/p&gt;
+
+&lt;h2 id=&quot;datos-relevantes-sobre-los-ataques-ddos&quot;&gt;Datos relevantes sobre los ataques DDoS&lt;/h2&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Característica&lt;/th&gt;
+      &lt;th&gt;Descripción&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Tipo de ataque&lt;/td&gt;
+      &lt;td&gt;Denegación de Servicio Distribuido&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Modo de operación&lt;/td&gt;
+      &lt;td&gt;Inundación de solicitudes falsas a un servidor o red&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Fuente&lt;/td&gt;
+      &lt;td&gt;Red distribuida de dispositivos comprometidos&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Objetivo&lt;/td&gt;
+      &lt;td&gt;Negar el acceso a un recurso en línea&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+        <pubDate>Tue, 27 Dec 2022 00:00:00 +0100</pubDate>
+        <link>http://localhost:4000//DDos-attack</link>
+        <link href="http://localhost:4000/DDos-attack"/>
+        <guid isPermaLink="true">http://localhost:4000/DDos-attack</guid>
+      </item>
+    
+      <item>
+        <title>Instalación y configuración de MicroTik</title>
+        <description>&lt;h2 id=&quot;instalación-y-configuración-de-microtik&quot;&gt;Instalación y configuración de MicroTik&lt;/h2&gt;
+
+&lt;p&gt;MicroTik es un sistema operativo basado en Linux que se utiliza para controlar redes y dispositivos de red. Se utiliza ampliamente en pequeñas y medianas empresas, ISPs y entornos domésticos para brindar una amplia gama de funciones, incluido el enrutamiento, la gestión de redes y la seguridad.&lt;/p&gt;
+
+&lt;p&gt;A continuación, se describen los pasos básicos para instalar y configurar MicroTik:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Descarga del software: Descargue la última versión del software de la página web oficial de MicroTik.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Instalación en el dispositivo: Siga las instrucciones de instalación para instalar el software en el dispositivo MicroTik.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Configuración inicial: Acceda a la interfaz de usuario de MicroTik y configure la dirección IP, la máscara de subred y la puerta de enlace predeterminada.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Configuración de la red: Configure los detalles de la red, incluidos los nombres de los servidores DNS, la configuración DHCP y la asignación de direcciones IP estáticas.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Configuración de seguridad: Configure los ajustes de seguridad, incluida la creación de reglas de firewall y la configuración de opciones de autenticación.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Es importante tener en cuenta que la configuración detallada de MicroTik depende de las necesidades y requisitos de cada red y entorno, por lo que es recomendable consultar la documentación oficial y los recursos en línea para obtener información más detallada sobre cómo configurar y administrar MicroTik de manera efectiva.&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 07 May 2021 00:00:00 +0200</pubDate>
+        <link>http://localhost:4000//Install-microtik</link>
+        <link href="http://localhost:4000/Install-microtik"/>
+        <guid isPermaLink="true">http://localhost:4000/Install-microtik</guid>
+      </item>
+    
+  </channel>
+</rss>
