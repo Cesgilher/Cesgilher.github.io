@@ -257,6 +257,84 @@ apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nano
       </item>
     
       <item>
+        <title>Conectar dos redes mediante Wireguard VPN</title>
+        <description>&lt;p&gt;En esta práctica vamos a usar Wireguard para conectar dos redes.&lt;/p&gt;
+
+&lt;h3 id=&quot;configuración-de-wireguard&quot;&gt;Configuración de Wireguard&lt;/h3&gt;
+
+&lt;p&gt;Para está práctica vamos a utilizar las máquinas de las dos prácticas anteriores.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;wireguard-ubuntu2204&quot;&gt;parte 1&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;wireguard-docker&quot;&gt;parte 2&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Dado que ya tenemos Wireguard instalado en ambas máquinas, vamos a configurar la VPN. Para ello basta con poner la configuración de cada servidor, como peer del otro.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte3/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Si activamos la vpn en ambas máquinas, y usamos el comando wg, podemos ver que están conectadas exitosamente.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte3/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;prueba-de-conexión&quot;&gt;Prueba de conexión&lt;/h3&gt;
+
+&lt;p&gt;Para ver que no hay trampa alguna, vamos a realizar un intento de ping entre los dos clientes para ver que no funciona.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte3/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora vamos a ver que pasa si activamos la VPN en ambas máquinas.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte3/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Como podemos ver, ahora sí es capaz de llegar a la maquina destino volver con los correspondientes echo reply.&lt;/p&gt;
+
+&lt;h3 id=&quot;esquema-de-ips&quot;&gt;Esquema de IP’s&lt;/h3&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Máquina&lt;/th&gt;
+      &lt;th&gt;Adaptador Puente&lt;/th&gt;
+      &lt;th&gt;Red Interna&lt;/th&gt;
+      &lt;th&gt;VPN&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Servidor1&lt;/td&gt;
+      &lt;td&gt;10.1.1.1/8&lt;/td&gt;
+      &lt;td&gt;192.168.10.1/24&lt;/td&gt;
+      &lt;td&gt;172.16.0.1/24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Lubuntu1&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;192.168.10.100/24&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Servidor2&lt;/td&gt;
+      &lt;td&gt;10.1.1.2/8&lt;/td&gt;
+      &lt;td&gt;192.168.80.1/24&lt;/td&gt;
+      &lt;td&gt;172.16.0.2/24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Lubuntu1&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;192.168.80.100/24&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+        <pubDate>Fri, 17 Feb 2023 00:00:00 +0100</pubDate>
+        <link>http://localhost:8000//wireguard-3</link>
+        <link href="http://localhost:8000/wireguard-3"/>
+        <guid isPermaLink="true">http://localhost:8000/wireguard-3</guid>
+      </item>
+    
+      <item>
         <title>Vulnhub DC-1.1</title>
         <description>&lt;p&gt;&lt;strong&gt;Resolucion de la maquina DC-1.1 de Vulnhub&lt;/strong&gt;&lt;/p&gt;
 
