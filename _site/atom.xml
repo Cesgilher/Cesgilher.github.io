@@ -131,11 +131,129 @@ iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; FORWARD &lt;span class
 
 iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; OUTPUT &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; lo &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;esquema-de-ips&quot;&gt;Esquema de IP’s&lt;/h3&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Máquina&lt;/th&gt;
+      &lt;th&gt;Adaptador Puente&lt;/th&gt;
+      &lt;th&gt;Red Interna&lt;/th&gt;
+      &lt;th&gt;VPN&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Servidor&lt;/td&gt;
+      &lt;td&gt;10.1.1.1/8&lt;/td&gt;
+      &lt;td&gt;192.168.10.1/24&lt;/td&gt;
+      &lt;td&gt;172.16.10.1/24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Windows&lt;/td&gt;
+      &lt;td&gt;10.0.0.10/8&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;172.16.10.10/24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Lubuntu&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;192.168.10.100/24&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 </description>
         <pubDate>Fri, 17 Feb 2023 00:00:00 +0100</pubDate>
         <link>http://localhost:8000//wireguard-ubuntu2204</link>
         <link href="http://localhost:8000/wireguard-ubuntu2204"/>
         <guid isPermaLink="true">http://localhost:8000/wireguard-ubuntu2204</guid>
+      </item>
+    
+      <item>
+        <title>Instalar Wireguard VPN en Docker</title>
+        <description>&lt;p&gt;En esta practica voy a explicar el proceso para configurar Wireguard VPN dentro de Docker.&lt;/p&gt;
+
+&lt;h3 id=&quot;instalación-de-wireguard&quot;&gt;Instalación de Wireguard&lt;/h3&gt;
+
+&lt;p&gt;Lo primero como siempre en ubuntu es actualizar los repositorios y el sistema.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt update
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt upgrade
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;docker docker-compose
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte2/1.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/assets/Practica13 VPN/parte2/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;creación-del-contenedor&quot;&gt;Creación del contenedor&lt;/h3&gt;
+
+&lt;p&gt;Para crear el contenedor usaremos el siguiente comando. Esto creará un contenedor con el nombre wireguard,con la hora de Madrid, escuchando en el puerto 51820, y utilizando la imagen de Wireguard. Además guarda la configuración en caso de que se reinicie el servidor.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--name&lt;/span&gt; wireguard &lt;span class=&quot;nt&quot;&gt;--cap-add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;NET_ADMIN &lt;span class=&quot;nt&quot;&gt;--cap-add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;SYS_MODULE &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;PUID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1000 &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;PGID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1000 &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;TZ&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;Europe/Madrid &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;SERVERURL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;auto &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;PEERS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;laptop,tablet,phone &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;PEERDNS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;auto &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 51820:51820/udp &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; wireguard_config:/config &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; /lib/modules:/lib/modules &lt;span class=&quot;nt&quot;&gt;--sysctl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;net.ipv4.conf.all.src_valid_mark=1&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--restart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;unless-stopped linuxserver/wireguard
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte2/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Dado que hemos especificado que queremos de peers laptop,tablet y phone, al arrancar el contenedor se generarán los QRs necesarios para que estos se conecten al servidor sin necesidad de mayor configuración. Pero en este caso vamos a conectarnos mediante el cliente de Wireguard para Windows. Así que podemos omitir esa orden a la hora de crear el contenedor.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte2/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;configuración-del-contenedor&quot;&gt;Configuración del contenedor&lt;/h3&gt;
+
+&lt;p&gt;Ahora que ya está corriendo el contenedor, vamos a configurarlo. Para ello vamos a entrar en el contenedor e instalar un editor de texto.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-it&lt;/span&gt; wireguard /bin/bash
+apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nano
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte2/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A partir de aquí los pasos son los mismos que los de la &lt;a href=&quot;wireguard-ubuntu2204&quot;&gt;practica anterior.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;conexión&quot;&gt;Conexión&lt;/h3&gt;
+&lt;p&gt;Para está práctica he cambiado tanto la red de la VPN como la de la red interna, para que sea distinta a la anterior.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte2/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;pruba-de-conexión&quot;&gt;Pruba de conexión&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte2/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;esquema-de-ips&quot;&gt;Esquema de IP’s&lt;/h3&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Máquina&lt;/th&gt;
+      &lt;th&gt;Adaptador Puente&lt;/th&gt;
+      &lt;th&gt;Red Interna&lt;/th&gt;
+      &lt;th&gt;VPN&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Servidor&lt;/td&gt;
+      &lt;td&gt;10.1.1.2/8&lt;/td&gt;
+      &lt;td&gt;192.168.80.1/24&lt;/td&gt;
+      &lt;td&gt;172.16.0.1/24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Windows&lt;/td&gt;
+      &lt;td&gt;10.0.0.10/8&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;172.16.0.10/24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Lubuntu&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;192.168.80.100/24&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+        <pubDate>Fri, 17 Feb 2023 00:00:00 +0100</pubDate>
+        <link>http://localhost:8000//wireguard-docker</link>
+        <link href="http://localhost:8000/wireguard-docker"/>
+        <guid isPermaLink="true">http://localhost:8000/wireguard-docker</guid>
       </item>
     
       <item>

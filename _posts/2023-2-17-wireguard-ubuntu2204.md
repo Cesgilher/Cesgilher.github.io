@@ -132,3 +132,11 @@ iptables -A FORWARD -i <interfaz_interna> -o <interfaz_vpn> -s 192.168.10.100 -j
 
 iptables -A OUTPUT -o lo -j ACCEPT
 ```
+### Esquema de IP's
+
+
+|Máquina| Adaptador Puente | Red Interna | VPN |
+| ------------- | ----------- | --- |
+| Servidor| 10.1.1.1/8| 192.168.10.1/24 |172.16.10.1/24 |
+| Windows| 10.0.0.10/8 | | 172.16.10.10/24   |
+| Lubuntu|  |192.168.10.100/24 ||
