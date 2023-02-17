@@ -3,13 +3,125 @@
   <channel>
     <title>Cesgilher</title>
     <description>A personal blog</description>
-    <link>http://localhost:4000</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <link>http://localhost:8000</link>
+    <atom:link href="http://localhost:8000/feed.xml" rel="self" type="application/rss+xml" />
     <author>
       <name>Cesgilher</name>
       <email>cesgilher@gmail.com</email>
       <uri>cesgilher.github.io</uri>
     </author>
+    
+      <item>
+        <title>Practica VPN</title>
+        <description>&lt;p&gt;&lt;strong&gt;Resolucion de la práctica de VPN’s de Seguridad&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;En esta practica voy a explicar el proceso para configurar una VPN de cada una de las formas que se piden en la practica.&lt;/p&gt;
+
+&lt;h2 id=&quot;vpn-con-wireguard-en-un-servidor-ubuntu-2204&quot;&gt;VPN con Wireguard en un servidor Ubuntu 22.04&lt;/h2&gt;
+
+&lt;h3 id=&quot;instalación-de-wireguard&quot;&gt;Instalación de Wireguard&lt;/h3&gt;
+
+&lt;p&gt;Lo primero como siempre en ubuntu es actualizar los repositorios y actualizar el sistema.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt update
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt upgrade
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;wireguard
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;configuración-del-servidor&quot;&gt;Configuración del servidor&lt;/h3&gt;
+
+&lt;p&gt;Una vez instalado, vamos a crear el par de claves para el servidor.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;wg genkey | &lt;span class=&quot;nb&quot;&gt;sudo tee&lt;/span&gt; /etc/wireguard/privatekey | &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;wg pubkey | &lt;span class=&quot;nb&quot;&gt;sudo tee&lt;/span&gt; /etc/wireguard/publickey
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Esto generará la clave privada y la clave publica correspondiente a esta. Y las almacena en la carpeta de wireguard para que sean mas accesibles durante el resto del proceso.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Antes de seguir vamos a activar el bit de forwarding en el kernel de linux. Para ello vamos a editar el archivo de configuración del kernel.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nano /etc/sysctl.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Y añadimos la siguiente linea.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;net.ipv4.ip_forward&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora vamos a crear el archivo de configuración del servidor. Para ello vamos a crear un archivo de configuración en la carpeta de wireguard.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nano /etc/wireguard/wg0.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Dentro de este archivo vamos a añadir la siguiente configuración.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Interface]
+Address &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &amp;lt;una ip dentro de la red que queramos que use la vpn&amp;gt;
+SaveConfig &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true
+&lt;/span&gt;ListenPort &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &amp;lt;puerto que queramos que use la vpn, por defecto el 51820&amp;gt;
+PostUp &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; FORWARD &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; %i &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; iptables &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; nat &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; POSTROUTING &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &amp;lt;interfaz de salida&amp;gt; &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; MASQUERADE
+PostDown &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; iptables &lt;span class=&quot;nt&quot;&gt;-D&lt;/span&gt; FORWARD &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; %i &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; iptables &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; nat &lt;span class=&quot;nt&quot;&gt;-D&lt;/span&gt; POSTROUTING &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &amp;lt;interfaz de salida&amp;gt; &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; MASQUERADE
+PrivateKey &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &amp;lt;clave privada del servidor&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora vamos a crear el archivo de configuración del cliente. Para ello vamos a nuestro cliente y en caso de que sea windows, mediante el porgrama de wireguard, vamos a crear un nuevo tunel vacio. En caso de ser linux, vamos a crear un archivo de configuración en la carpeta de wireguard. Aqui vamos a añadir la siguiente configuración.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;```bash
+[Interface]
+Address = &amp;lt;una ip dentro de la red que queramos que use la vpn&amp;gt;
+PrivateKey = &amp;lt;clave privada del cliente&amp;gt;
+[Peer]
+PublicKey = &amp;lt;clave publica del servidor&amp;gt;
+Endpoint = &amp;lt;ip del servidor&amp;gt;:&amp;lt;puerto&amp;gt;
+AllowedIPs =&amp;lt;las ips que queramos que suministre el servidor, en mi caso queremos llegar a la maquina que está en la 192.168.10.100 asi que pondremos 192.168.10.0/24&amp;gt;
+```
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;De vuelta en el servidor, vamos a añadir la siguiente configuración al archivo de configuración del servidor.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Peer]
+PublicKey &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &amp;lt;clave publica del cliente&amp;gt;
+AllowedIPs &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &amp;lt;la ip que hayamos puesto en el archivo de configuración del cliente&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para que todo esto funcione, vamos a abrir el puerto en el servidor.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ufw allow &amp;lt;puerto&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;En caso de que quisieramos que la vpn se arranque con el sistema, hariamos un enable.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Aunque para la practica basta con un start.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora ya podemos activar la vpn.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;wg-quick up wg0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Y comprobar que funciona.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte1/11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;En la imagen anterior, se puede ver como el ping no funciona cuando no estamos conectados a la vpn, pero si funciona cuando lo estamos.&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 17 Feb 2023 00:00:00 +0100</pubDate>
+        <link>http://localhost:8000//Practica-VPN</link>
+        <link href="http://localhost:8000/Practica-VPN"/>
+        <guid isPermaLink="true">http://localhost:8000/Practica-VPN</guid>
+      </item>
     
       <item>
         <title>Vulnhub DC-1.1</title>
@@ -72,9 +184,9 @@
 
 </description>
         <pubDate>Mon, 13 Feb 2023 00:00:00 +0100</pubDate>
-        <link>http://localhost:4000//VulnHub-DC-1.1</link>
-        <link href="http://localhost:4000/VulnHub-DC-1.1"/>
-        <guid isPermaLink="true">http://localhost:4000/VulnHub-DC-1.1</guid>
+        <link>http://localhost:8000//VulnHub-DC-1.1</link>
+        <link href="http://localhost:8000/VulnHub-DC-1.1"/>
+        <guid isPermaLink="true">http://localhost:8000/VulnHub-DC-1.1</guid>
       </item>
     
       <item>
@@ -115,9 +227,9 @@
 &lt;/table&gt;
 </description>
         <pubDate>Tue, 27 Dec 2022 00:00:00 +0100</pubDate>
-        <link>http://localhost:4000//DDos-attack</link>
-        <link href="http://localhost:4000/DDos-attack"/>
-        <guid isPermaLink="true">http://localhost:4000/DDos-attack</guid>
+        <link>http://localhost:8000//DDos-attack</link>
+        <link href="http://localhost:8000/DDos-attack"/>
+        <guid isPermaLink="true">http://localhost:8000/DDos-attack</guid>
       </item>
     
       <item>
@@ -150,9 +262,9 @@
 
 </description>
         <pubDate>Fri, 07 May 2021 00:00:00 +0200</pubDate>
-        <link>http://localhost:4000//Install-microtik</link>
-        <link href="http://localhost:4000/Install-microtik"/>
-        <guid isPermaLink="true">http://localhost:4000/Install-microtik</guid>
+        <link>http://localhost:8000//Install-microtik</link>
+        <link href="http://localhost:8000/Install-microtik"/>
+        <guid isPermaLink="true">http://localhost:8000/Install-microtik</guid>
       </item>
     
   </channel>

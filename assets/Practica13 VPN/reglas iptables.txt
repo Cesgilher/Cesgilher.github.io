@@ -1,0 +1,33 @@
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+
+#SSH
+iptables -A INPUT -p tcp --dport 22 -s 10.0.0.10/32 -j ACCEPT
+iptables -A OUTPUT -m state --state  established  -d 10.0.0.10/32 -j ACCEPT
+
+
+iptables -A INPUT -p udp --dport 51820 -s 10.0.0.10/32 -j ACCEPT
+
+#ACTIVAR BIT DE FORWARD
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+docker run -d \
+--name wireguard \
+--cap-add=NET_ADMIN \
+--cap-add=SYS_MODULE \
+-e PUID=1000 -e PGID=1000 \
+-e TZ=Europe/Madrid \
+-e SERVERURL=auto \ 
+-e PEERS=laptop,tablet,phone \
+-e PEERDNS=auto \
+-p 51820:51820/udp \
+-v wireguard_config:/config \
+-v /lib/modules:/lib/modules \
+--sysctl="net.ipv4.conf.all.src_valid_mark=1" \
+--restart=unless-stopped \
+linuxserver/wireguard
+
+
+
+
