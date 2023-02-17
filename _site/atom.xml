@@ -12,6 +12,88 @@
     </author>
     
       <item>
+        <title>Conectar dos redes mediante ZeroTier VPN</title>
+        <description>&lt;p&gt;En esta práctica vamos a usar Zerotier para conectar dos equipos a traves de internet.&lt;/p&gt;
+
+&lt;p&gt;Para simular esto, usaremos un equipo windows conectado a internet y un movil con 5G.&lt;/p&gt;
+
+&lt;h3 id=&quot;configuración-de-zerotier&quot;&gt;Configuración de Zerotier&lt;/h3&gt;
+
+&lt;p&gt;Lo primero de todo es crearnos una cuenta en la web de zerotier, si no la tenemos ya creada. Puedes vincular tu cuenta de GitHub.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte4/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez creada la cuenta, vamos a la sección de networks y creamos una nueva red.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte4/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora basta con descargar el cliente de Zerotier tanto en windows como en el movil y conectarnos. Es tan sencillo como poner el id de la red que acabamos de crear y listo, ya estaría configurada la VPN.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte4/3.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/assets/Practica13 VPN/parte4/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Destacar que para que funcione en el movil usando 5G, es necesario permitir su uso.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte4/7.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/assets/Practica13 VPN/parte4/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora basta con volver a la web de Zerotier y permitir la conexión a los equipos.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte4/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;prueba-de-conexión&quot;&gt;Prueba de conexión&lt;/h3&gt;
+
+&lt;h4 id=&quot;windows-a-movil&quot;&gt;Windows a movil&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte4/5.png&quot; alt=&quot;Windows a movil&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;movil-a-windows&quot;&gt;Movil a Windows&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Practica13 VPN/parte4/9.png&quot; alt=&quot;Windows a movil&quot; /&gt;
+&lt;img src=&quot;/assets/Practica13 VPN/parte4/10.png&quot; alt=&quot;Windows a movil&quot; /&gt;
+&lt;img src=&quot;/assets/Practica13 VPN/parte4/11.png&quot; alt=&quot;Windows a movil&quot; /&gt;&lt;/p&gt;
+
+&lt;!-- Para está práctica vamos a u0tilizar las máquinas de las dos prácticas anteriores.
+
+- [parte 1](wireguard-ubuntu2204)
+- [parte 2](wireguard-docker)
+
+Dado que ya tenemos Wireguard instalado en ambas máquinas, vamos a configurar la VPN. Para ello basta con poner la configuración de cada servidor, como peer del otro.
+
+![](/assets/Practica13 VPN/parte3/1.png)
+
+Si activamos la vpn en ambas máquinas, y usamos el comando wg, podemos ver que están conectadas exitosamente.
+
+![](/assets/Practica13 VPN/parte3/2.png)
+
+### Prueba de conexión
+
+Para ver que no hay trampa alguna, vamos a realizar un intento de ping entre los dos clientes para ver que no funciona.
+
+![](/assets/Practica13 VPN/parte3/3.png)
+
+Ahora vamos a ver que pasa si activamos la VPN en ambas máquinas.
+
+![](/assets/Practica13 VPN/parte3/4.png)
+
+Como podemos ver, ahora sí es capaz de llegar a la maquina destino volver con los correspondientes echo reply.
+
+### Esquema de IP&apos;s
+
+
+|Máquina| Adaptador Puente | Red Interna | VPN |
+| ------------- | ----------- | --- |
+| Servidor1| 10.1.1.1/8| 192.168.10.1/24 |172.16.0.1/24 |
+| Lubuntu1|  |192.168.10.100/24 ||
+| Servidor2| 10.1.1.2/8| 192.168.80.1/24 |172.16.0.2/24 |
+| Lubuntu1|  |192.168.80.100/24 || --&gt;
+</description>
+        <pubDate>Fri, 17 Feb 2023 00:00:00 +0100</pubDate>
+        <link>http://localhost:8000//zerotier</link>
+        <link href="http://localhost:8000/zerotier"/>
+        <guid isPermaLink="true">http://localhost:8000/zerotier</guid>
+      </item>
+    
+      <item>
         <title>Instalar Wireguard VPN en Ubuntu Server 22.04</title>
         <description>&lt;p&gt;En esta practica voy a explicar el proceso para configurar Wireguard VPN en Ubuntu Server 22.04&lt;/p&gt;
 
