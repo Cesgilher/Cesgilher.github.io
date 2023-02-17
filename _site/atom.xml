@@ -12,12 +12,8 @@
     </author>
     
       <item>
-        <title>Practica VPN</title>
-        <description>&lt;p&gt;&lt;strong&gt;Resolucion de la práctica de VPN’s de Seguridad&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;En esta practica voy a explicar el proceso para configurar una VPN de cada una de las formas que se piden en la practica.&lt;/p&gt;
-
-&lt;h2 id=&quot;vpn-con-wireguard-en-un-servidor-ubuntu-2204&quot;&gt;VPN con Wireguard en un servidor Ubuntu 22.04&lt;/h2&gt;
+        <title>Instalar Wireguard VPN en Ubuntu Server 22.04</title>
+        <description>&lt;p&gt;En esta practica voy a explicar el proceso para configurar Wireguard VPN en Ubuntu Server 22.04&lt;/p&gt;
 
 &lt;h3 id=&quot;instalación-de-wireguard&quot;&gt;Instalación de Wireguard&lt;/h3&gt;
 
@@ -116,11 +112,30 @@ AllowedIPs &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &amp;lt;la ip que haya
 
 &lt;p&gt;En la imagen anterior, se puede ver como el ping no funciona cuando no estamos conectados a la vpn, pero si funciona cuando lo estamos.&lt;/p&gt;
 
+&lt;h3 id=&quot;lista-de-iptables-utilizadas&quot;&gt;LIsta de iptables utilizadas&lt;/h3&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;iptables &lt;span class=&quot;nt&quot;&gt;-P&lt;/span&gt; INPUT DROP
+iptables &lt;span class=&quot;nt&quot;&gt;-P&lt;/span&gt; FORWARD DROP
+iptables &lt;span class=&quot;nt&quot;&gt;-P&lt;/span&gt; OUTPUT DROP
+
+&lt;span class=&quot;c&quot;&gt;#SSH&lt;/span&gt;
+iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; INPUT &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; tcp &lt;span class=&quot;nt&quot;&gt;--dport&lt;/span&gt; 22 &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 10.0.0.10/32 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; OUTPUT &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; state &lt;span class=&quot;nt&quot;&gt;--state&lt;/span&gt;  established  &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; 10.0.0.10/32 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+
+&lt;span class=&quot;c&quot;&gt;#Para permitir la comunicacione entre windows y la maquina de la res interna&lt;/span&gt;
+iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; INPUT &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; udp &lt;span class=&quot;nt&quot;&gt;--dport&lt;/span&gt; 51820 &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 10.0.0.10/32 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; INPUT &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; lo &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+
+iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; FORWARD &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &amp;lt;interfaz_vpn&amp;gt; &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &amp;lt;interfaz_interna&amp;gt; &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; 192.168.10.100 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; FORWARD &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &amp;lt;interfaz_interna&amp;gt; &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &amp;lt;interfaz_vpn&amp;gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 192.168.10.100 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+
+iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; OUTPUT &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; lo &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Fri, 17 Feb 2023 00:00:00 +0100</pubDate>
-        <link>http://localhost:8000//Practica-VPN</link>
-        <link href="http://localhost:8000/Practica-VPN"/>
-        <guid isPermaLink="true">http://localhost:8000/Practica-VPN</guid>
+        <link>http://localhost:8000//wireguard-ubuntu2204</link>
+        <link href="http://localhost:8000/wireguard-ubuntu2204"/>
+        <guid isPermaLink="true">http://localhost:8000/wireguard-ubuntu2204</guid>
       </item>
     
       <item>

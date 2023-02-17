@@ -1,12 +1,8 @@
 ---
-title: Practica VPN
+title: Instalar Wireguard VPN en Ubuntu Server 22.04
 published: true
 ---
-**Resolucion de la práctica de VPN's de Seguridad**
-
-En esta practica voy a explicar el proceso para configurar una VPN de cada una de las formas que se piden en la practica.
-
-## VPN con Wireguard en un servidor Ubuntu 22.04
+En esta practica voy a explicar el proceso para configurar Wireguard VPN en Ubuntu Server 22.04
 
 ### Instalación de Wireguard
 
@@ -115,3 +111,24 @@ Y comprobar que funciona.
 
 En la imagen anterior, se puede ver como el ping no funciona cuando no estamos conectados a la vpn, pero si funciona cuando lo estamos.
 
+
+### LIsta de iptables utilizadas
+
+```bash    
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+
+#SSH
+iptables -A INPUT -p tcp --dport 22 -s 10.0.0.10/32 -j ACCEPT
+iptables -A OUTPUT -m state --state  established  -d 10.0.0.10/32 -j ACCEPT
+
+#Para permitir la comunicacione entre windows y la maquina de la res interna
+iptables -A INPUT -p udp --dport 51820 -s 10.0.0.10/32 -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+
+iptables -A FORWARD -i <interfaz_vpn> -o <interfaz_interna> -d 192.168.10.100 -j ACCEPT
+iptables -A FORWARD -i <interfaz_interna> -o <interfaz_vpn> -s 192.168.10.100 -j ACCEPT
+
+iptables -A OUTPUT -o lo -j ACCEPT
+```
