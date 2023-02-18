@@ -39,4 +39,4 @@ Como podemos ver, ahora sí es capaz de llegar a la maquina destino volver con l
 | Servidor1| 10.1.1.1/8| 192.168.10.1/24 |172.16.0.1/24 |
 | Lubuntu1|  |192.168.10.100/24 ||
 | Servidor2| 10.1.1.2/8| 192.168.80.1/24 |172.16.0.2/24 |
-| Lubuntu1|  |192.168.80.100/24 ||
+| Lubuntu2|  |192.168.80.100/24 ||

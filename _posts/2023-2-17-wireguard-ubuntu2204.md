@@ -123,7 +123,7 @@ iptables -P OUTPUT DROP
 iptables -A INPUT -p tcp --dport 22 -s 10.0.0.10/32 -j ACCEPT
 iptables -A OUTPUT -m state --state  established  -d 10.0.0.10/32 -j ACCEPT
 
-#Para permitir la comunicacione entre windows y la maquina de la res interna
+#Para permitir la comunicación entre windows y la maquina de la red interna
 iptables -A INPUT -p udp --dport 51820 -s 10.0.0.10/32 -j ACCEPT
 iptables -A INPUT -i lo -j ACCEPT
 
