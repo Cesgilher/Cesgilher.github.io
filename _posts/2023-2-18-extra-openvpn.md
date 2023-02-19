@@ -1,82 +1,123 @@
 ---
 title: (EXTRA)OpenVPN
-published: false
+published: True
 ---
-En esta práctica vamos a usar Zerotier para conectar dos equipos a traves de internet.
+En esta práctica vamos a usar OpenVPN para conectar dos equipos a traves de internet.
 
-Para simular esto, usaremos un equipo windows conectado a internet y un movil con 5G.
+Se puede instalar en Windows, linux, docker y varios routers como Mikrotik o PFSense. Yo voy a utilizar PFSense porque me parece bastante fácil de configurar, además de porque la extension de OpenVPN viene instalada por defecto en PFSense.
+### Configuración de OpenVPN
 
-### Configuración de Zerotier
+Lo primero de todo es crear una CA dentro de PFSense. Para ello vamos a System->Certificate Manager->CAs y creamos una nueva CA.
 
-Lo primero de todo es crearnos una cuenta en la web de zerotier, si no la tenemos ya creada. Puedes vincular tu cuenta de GitHub.
+![](/assets/Practica13 VPN/Extra/openvpn/3.png)
 
-![](/assets/Practica13 VPN/parte4/1.png)
+Le ponemos el nombre que queramos y le damos a save.
 
-Una vez creada la cuenta, vamos a la sección de networks y creamos una nueva red.
+![](/assets/Practica13 VPN/Extra/openvpn/4.png)
 
-![](/assets/Practica13 VPN/parte4/2.png)
+![](/assets/Practica13 VPN/Extra/openvpn/5.png)
 
+Ahora en la pestaña de Certificados, creamos uno nuevo para el servidor.
 
-Ahora basta con descargar el cliente de Zerotier tanto en windows como en el movil y conectarnos. Es tan sencillo como poner el id de la red que acabamos de crear y listo, ya estaría configurada la VPN. 
+![](/assets/Practica13 VPN/Extra/openvpn/7.png)
 
-![](/assets/Practica13 VPN/parte4/3.png)
-![](/assets/Practica13 VPN/parte4/6.png)
+Hay que asegurarnos de que el certificado sea de tipo Servidor.
 
-Destacar que para que funcione en el movil usando 5G, es necesario permitir su uso.
+![](/assets/Practica13 VPN/Extra/openvpn/8.png)
 
-![](/assets/Practica13 VPN/parte4/7.png)
-![](/assets/Practica13 VPN/parte4/8.png)
+Si todo ha ido bien, deberíamos tener algo así.
 
-Ahora basta con volver a la web de Zerotier y permitir la conexión a los equipos.
+![](/assets/Practica13 VPN/Extra/openvpn/9.png)
 
-![](/assets/Practica13 VPN/parte4/4.png)
+Ahora vamos a System->User Manager y creamos un nuevo usuario.
 
-### Prueba de conexión
+![](/assets/Practica13 VPN/Extra/openvpn/10.png)
 
-#### Windows a movil
-![Windows a movil](/assets/Practica13 VPN/parte4/5.png)
+Si queremos que además de contraseña, use un certificado, vamos a la parte de User Certificate y creamos uno nuevo, esto nos redirigirá a la pestaña de certificados donde deberemos crear uno nuevo, pero esta vez de tipo Cliente.
 
-#### Movil a Windows
+![](/assets/Practica13 VPN/Extra/openvpn/11.png)
 
-![Windows a movil](/assets/Practica13 VPN/parte4/9.png)
-![Windows a movil](/assets/Practica13 VPN/parte4/10.png)
-![Windows a movil](/assets/Practica13 VPN/parte4/11.png)
+![](/assets/Practica13 VPN/Extra/openvpn/12.png)
 
+Si todo ha ido bien, ahora en la configuración del usuario, deberíamos tener algo así.
 
-
+![](/assets/Practica13 VPN/Extra/openvpn/13.png)
 
 
-<!-- Para está práctica vamos a u0tilizar las máquinas de las dos prácticas anteriores.
 
-- [parte 1](wireguard-ubuntu2204)
-- [parte 2](wireguard-docker)
+### Configuración de la VPN
 
-Dado que ya tenemos Wireguard instalado en ambas máquinas, vamos a configurar la VPN. Para ello basta con poner la configuración de cada servidor, como peer del otro.
+Ahora vamos a VPN->OpenVPN->Server y creamos una nueva configuración. Aquí definiremos la red, el puerto, el protocolo, etc. Además de el tipo de seguridad que queremos que tenga la VPN. En mi caso voy a usar TLS + User Auth.
 
-![](/assets/Practica13 VPN/parte3/1.png)
+![](/assets/Practica13 VPN/Extra/openvpn/15.png)
 
-Si activamos la vpn en ambas máquinas, y usamos el comando wg, podemos ver que están conectadas exitosamente.
+En la parte de configuración cryptográfica, vamos a poner el certificado que acabamos de crear.Y estableceremos el tipo de encriptación que queremos usar. Si no habeis cambiado nada en los pasos anteriores, no hace falta ni que la toquéis.
 
-![](/assets/Practica13 VPN/parte3/2.png)
+![](/assets/Practica13 VPN/Extra/openvpn/16.png)
 
-### Prueba de conexión
+En la parte de ajustes de tunel, es donde deberemos poner la red que queremos que sea la VPN, ademas de las rutas que queremos que se usen.
 
-Para ver que no hay trampa alguna, vamos a realizar un intento de ping entre los dos clientes para ver que no funciona.
+![](/assets/Practica13 VPN/Extra/openvpn/17.png)
 
-![](/assets/Practica13 VPN/parte3/3.png)
+En la parte del cliente no hace falta cabiar nada, y en configuración avanzada, elegir si queremosa que cree una puerta de enlace para IPv4, IPv6 o ambas. En mi caso solo voy a usar IPv4.
 
-Ahora vamos a ver que pasa si activamos la VPN en ambas máquinas.
+![](/assets/Practica13 VPN/Extra/openvpn/19.png)
 
-![](/assets/Practica13 VPN/parte3/4.png)
+Si guardamos los cambios y vamos a Status->OpenVPN, deberíamos ver que la VPN está activa.
 
-Como podemos ver, ahora sí es capaz de llegar a la maquina destino volver con los correspondientes echo reply.
+![](/assets/Practica13 VPN/Extra/openvpn/20.png)
+
+### Configuración del firewall
+
+Ya tenemos nuestra Vpn creada y corriendo, pero si queremos que funcione, tenemos que configurar el firewall para que permita el trafico de la VPN. Para ello vamos a Firewall->Rules->OpenVPN y creamos una nueva regla.
+
+![](/assets/Practica13 VPN/Extra/openvpn/22.png)
+
+Ahora vamos a Firewall->Rules->WAN y creamos una nueva regla, para permitir la conexión al puerto que hemos elegido para la VPN.
+
+![](/assets/Practica13 VPN/Extra/openvpn/23.png)
+
+![](/assets/Practica13 VPN/Extra/openvpn/24.png)
+
+### Descarga del cliente
+
+Bien podriamos instalar el programa de OpenVPN en el equipo cliente, pero en este caso vamos a usar una extension de PFSense, que nos permite crear un instalador personalizado, con la configuración que queramos. Para ello vamos a instalar la extension.
+
+![](/assets/Practica13 VPN/Extra/openvpn/25.png)
+
+Una vez instalada, vamos a VPN->OpenVPN->Client Exporter y creamos una nueva configuración.
+
+![](/assets/Practica13 VPN/Extra/openvpn/26.png)
+
+Lo que mas me gusta de esta extension, es que es compatible con la mayoria de dispositivos y sistemas operativos. En mi caso voy a usar Windows, pero podriamos usar Android, iOS, Linux, MacOS, etc.
+
+![](/assets/Practica13 VPN/Extra/openvpn/27.png)
+
+Una vez creado el instalador, lo descargamos y lo ejecutamos. Esto iniciará un wizard de instalación para OpenVPN. 
+
+Después, ya solo tendremos que conectarnos a la VPN y listo. Nos pedirá el usuario y contraseña que creamos en el paso anterior.
+
+![](/assets/Practica13 VPN/Extra/openvpn/28.png)
+
+![](/assets/Practica13 VPN/Extra/openvpn/29.png)
+
+Y como se puede ver a continuación, ya tenemos acceso a la red de la VPN.
+
+![](/assets/Practica13 VPN/Extra/openvpn/30.png)
+
+### Prueba de Ping  
+
+![](/assets/Practica13 VPN/Extra/openvpn/31.png)
+
+Si desconectamos la VPN, ya no podremos acceder a la red interna.
+
+![](/assets/Practica13 VPN/Extra/openvpn/32.png)
 
 ### Esquema de IP's
 
 
 |Máquina| Adaptador Puente | Red Interna | VPN |
 | ------------- | ----------- | --- |
-| Servidor1| 10.1.1.1/8| 192.168.10.1/24 |172.16.0.1/24 |
-| Lubuntu1|  |192.168.10.100/24 ||
-| Servidor2| 10.1.1.2/8| 192.168.80.1/24 |172.16.0.2/24 |
-| Lubuntu1|  |192.168.80.100/24 || -->
+| Servidor1| 10.0.55.50/8| 192.168.10.1/24 |172.16.77.1/24 |
+| Windows| 10.0.0.10/8| |172.16.77.2/24(DHCP)|
+| Lubuntu1|  |192.168.80.50/24 ||
