@@ -43,6 +43,9 @@
   {% if site.google_analytics %}
     {% include analytics.html %}
   {% endif %}
+  {% if page.comments %}
+    <script id="dsq-count-scr" src="//cesgilher.disqus.com/count.js" async></script>
+  {% endif %}
 </body>
 
 </html>
