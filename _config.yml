@@ -14,9 +14,8 @@ paginate: 3
 paginate_path: /page/:num/
 
 collections:
-  repos-guapos:
+  coleccion:
     output: true
-    permalink: /repos-guapos/:name
 
 
 defaults:

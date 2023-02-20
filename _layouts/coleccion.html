@@ -1,0 +1,10 @@
+---
+layout: default
+---
+
+<h1>Repositorios de interes:</h1>
+<ul>
+{% for item in site.coleccion %}
+<li>{{ item.title }} {{ item.content }}</li>
+{% endfor %}
+</ul>
